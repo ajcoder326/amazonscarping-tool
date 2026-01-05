@@ -1,0 +1,211 @@
+# Amazon Audit Script - Batch Mode with Cookies
+# Windows Quick Start Guide
+
+## ✅ SETUP COMPLETE!
+
+Your script is now configured with:
+- 🍪 Amazon Cookie Authentication (20 cookies loaded)
+- 📦 Batch Processing (5000 ASINs per batch)
+- ⏱️  10-minute cooldown between batches
+- 🎲 Random delays (2-4 seconds per request)
+
+---
+
+## 🚀 HOW TO RUN
+
+### Option 1: Double-Click Batch File (Easiest)
+1. Open `run_audit.bat`
+2. Edit the `ASIN_FILE` path to your Excel/CSV file
+3. Save and double-click to run
+
+### Option 2: PowerShell Command
+```powershell
+cd "f:\audit updated v1"
+$env:PYTHONPATH="f:\audit updated v1"
+& "C:/Program Files/Python312/python.exe" "audit-new-exe\runner_linux.py" -file "C:\Users\dj\Downloads\YOUR_FILE.xlsx" -batch 5000 -wait 600
+```
+
+### Option 3: Command Prompt
+```cmd
+cd /d "f:\audit updated v1"
+set PYTHONPATH=f:\audit updated v1
+"C:\Program Files\Python312\python.exe" "audit-new-exe\runner_linux.py" -file "C:\Users\dj\Downloads\YOUR_FILE.xlsx" -batch 5000 -wait 600
+```
+
+---
+
+## 📋 COMMAND LINE OPTIONS
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `-file` | Required | Path to your ASIN file (Excel/CSV) |
+| `-batch` | 5000 | ASINs per batch |
+| `-wait` | 600 | Seconds to wait between batches (600 = 10 min) |
+| `-limit` | None | Process only first N ASINs (for testing) |
+
+**Examples:**
+```cmd
+# Process first 100 ASINs (testing)
+python audit-new-exe\runner_linux.py -file "test.xlsx" -limit 100
+
+# Process 10k batches with 15-minute breaks
+python audit-new-exe\runner_linux.py -file "large.xlsx" -batch 10000 -wait 900
+
+# Default: 5k batches with 10-minute breaks
+python audit-new-exe\runner_linux.py -file "file.xlsx"
+```
+
+---
+
+## 📊 EXPECTED PERFORMANCE
+
+For 35,185 ASINs with current settings:
+- **Batches:** 8 batches (7×5000 + 1×185)
+- **Processing time:** ~6-8 hours
+- **Wait time:** 7×10 min = 70 minutes
+- **Total time:** ~7-9 hours
+
+**Speed breakdown:**
+- 30 parallel browsers
+- ~15-20 seconds per ASIN
+- ~150-200 ASINs per minute
+- ~9,000-12,000 ASINs per hour
+
+---
+
+## 🍪 COOKIE MANAGEMENT
+
+**Cookie file location:**
+```
+f:\audit updated v1\cookies\amazon_cookies.json
+```
+
+**When to update cookies:**
+- If you see "Suppressed Detail Page Removed" for live products
+- If script starts failing after 10k+ ASINs
+- If cookies expire (check expiration dates)
+
+**How to update cookies:**
+1. Open Chrome and go to amazon.in
+2. Login to your account
+3. Press F12 → Application tab → Cookies → amazon.in
+4. Export cookies using browser extension or manually copy
+5. Replace `cookies/amazon_cookies.json`
+
+---
+
+## 📁 OUTPUT LOCATION
+
+Results are saved to:
+```
+C:\Users\dj\Documents\Audited_files\
+```
+
+**File naming format:**
+```
+YourFileName_YYYYMMDD_HHMMSS.csv
+```
+
+**Example:**
+```
+Pending 35185_20251118_143022.csv
+```
+
+---
+
+## 🎯 BATCH PROCESSING EXAMPLE
+
+For 35,185 ASINs:
+
+```
+Batch 1: ASINs 1-5000      | Processing → 10 min wait
+Batch 2: ASINs 5001-10000  | Processing → 10 min wait
+Batch 3: ASINs 10001-15000 | Processing → 10 min wait
+Batch 4: ASINs 15001-20000 | Processing → 10 min wait
+Batch 5: ASINs 20001-25000 | Processing → 10 min wait
+Batch 6: ASINs 25001-30000 | Processing → 10 min wait
+Batch 7: ASINs 30001-35000 | Processing → 10 min wait
+Batch 8: ASINs 35001-35185 | Processing → DONE!
+```
+
+---
+
+## 🛠️ TROUBLESHOOTING
+
+### Issue: "Module not found" error
+**Solution:**
+```cmd
+set PYTHONPATH=f:\audit updated v1
+```
+
+### Issue: Cookies not loading
+**Solution:**
+```cmd
+python test_cookies.py
+```
+This will verify your cookie setup.
+
+### Issue: Still getting blocked after 10k ASINs
+**Solution:**
+- Reduce batch size: `-batch 3000`
+- Increase wait time: `-wait 900` (15 minutes)
+- Reduce parallel browsers: Edit `MAX_BROWSERS` in runner_linux.py (change from 30 to 15)
+
+### Issue: Script running too slow
+**Solution:**
+- Increase parallel browsers: Edit `MAX_BROWSERS` in main_linux.py (change from 30 to 50)
+- Reduce wait time: `-wait 300` (5 minutes)
+
+---
+
+## 📈 MONITORING PROGRESS
+
+The script shows:
+```
+🎯 BATCH 1/8
+📍 Processing ASINs: 1 to 5000 (5000 ASINs)
+⏰ Batch start: 14:30:22
+======================================================================
+✅ B0CW1TBQHB - Live
+✅ B0CVXSB45L - Live
+...
+======================================================================
+✅ BATCH 1/8 COMPLETED!
+⏱️  Batch time: 45m 30s
+📈 Batch rate: 6593 ASINs/hour
+📊 Progress: 5000/35185 (14.2%)
+======================================================================
+
+⏸️  COOLDOWN PERIOD
+⏳ Waiting 10 minutes before next batch...
+💤 Cooling down to avoid rate limiting...
+   ⏱️  10 minutes remaining...
+   ⏱️  9 minutes remaining...
+   ...
+```
+
+---
+
+## ✅ FINAL CHECKLIST
+
+Before running:
+- [ ] Cookie file exists: `cookies/amazon_cookies.json`
+- [ ] ASIN file path is correct in `run_audit.bat`
+- [ ] Output folder exists: `C:\Users\dj\Documents\Audited_files\`
+- [ ] Python installed: `C:\Program Files\Python312\python.exe`
+- [ ] PYTHONPATH is set
+
+---
+
+## 🎉 READY TO RUN!
+
+Simply double-click `run_audit.bat` and let it run!
+
+The script will automatically:
+1. ✅ Load your cookies for authentication
+2. ✅ Process 5000 ASINs at a time
+3. ✅ Wait 10 minutes between batches
+4. ✅ Add random delays to simulate human behavior
+5. ✅ Save results in real-time to CSV
+
+**Estimated completion:** 7-9 hours for 35,185 ASINs
