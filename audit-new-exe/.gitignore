@@ -1,0 +1,54 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+*.manifest
+*.spec
+
+# ---- Virtual environment ----
+venv/
+winenv/
+.venv/
+env/
+ENV/
+virt_env/
+venv.bak/
+pip-wheel-metadata/
+pip-log.txt
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ---- OS / Misc ----
+.DS_Store
+Thumbs.db
+
+# ---- Testing & Coverage ----
+.coverage
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+htmlcov/
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# ---- Logs ----
+*.log
+
+# ---- Environment Variables ----
+.env
+.env.*
