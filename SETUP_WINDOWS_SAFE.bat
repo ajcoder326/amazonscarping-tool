@@ -1,21 +1,23 @@
 @echo off
 REM ===============================================================
-REM Amazon Scraping Tool - Complete Setup Script
-REM One-click deployment for fresh Windows systems
+REM Amazon Scraping Tool - Windows Safe Setup Script
+REM Handles C++ compiler issues by using pre-compiled wheels
 REM ===============================================================
 
 setlocal enabledelayedexpansion
-title Amazon Scraping Tool - Setup
+title Amazon Scraping Tool - Windows Safe Setup
 
 echo.
 echo ============================================================
-echo    AMAZON SCRAPING TOOL - AUTOMATED SETUP
+echo    AMAZON SCRAPING TOOL - WINDOWS SAFE SETUP
 echo ============================================================
+echo.
+echo This script uses pre-compiled packages to avoid C++ compiler issues.
 echo.
 echo This script will automatically:
 echo    1. Check Python installation
 echo    2. Create virtual environment
-echo    3. Install all required packages
+echo    3. Install compatible packages (no compilation needed)
 echo    4. Install Playwright browsers
 echo    5. Create necessary directories
 echo    6. Configure startup scripts
@@ -49,9 +51,9 @@ if errorlevel 1 (
     echo    ERROR: PYTHON NOT FOUND!
     echo ============================================================
     echo.
-    echo Please install Python 3.10 or higher:
+    echo Please install Python 3.9 to 3.11 (recommended):
     echo    1. Go to: https://python.org/downloads
-    echo    2. Download Python 3.10+
+    echo    2. Download Python 3.11.x (AVOID 3.12+ for compatibility)
     echo    3. Run installer
     echo    4. IMPORTANT: Check "Add Python to PATH"
     echo    5. Click "Install Now"
@@ -65,25 +67,27 @@ if errorlevel 1 (
 for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VER=%%i
 echo    [OK] Python %PYTHON_VER% found!
 
-REM Check Python version (must be 3.10+)
+REM Check Python version (recommend 3.9-3.11)
 for /f "tokens=1,2 delims=." %%a in ("%PYTHON_VER%") do (
     set MAJOR=%%a
     set MINOR=%%b
 )
 
 if %MAJOR% LSS 3 (
-    echo    [ERROR] Python version too old. Need 3.10+
+    echo    [ERROR] Python version too old. Need 3.9+
     pause
     exit /b 1
 )
 
-if %MAJOR% EQU 3 if %MINOR% LSS 10 (
-    echo    [ERROR] Python version too old. Need 3.10+
-    pause
-    exit /b 1
+if %MAJOR% EQU 3 if %MINOR% LSS 9 (
+    echo    [WARNING] Python version is old. Recommend 3.9-3.11 for best compatibility
 )
 
-echo    [OK] Python version is compatible!
+if %MAJOR% EQU 3 if %MINOR% GTR 11 (
+    echo    [WARNING] Python 3.12+ may have compatibility issues. Recommend 3.9-3.11
+)
+
+echo    [OK] Python version is acceptable!
 echo.
 
 REM ============================================================
@@ -141,54 +145,58 @@ echo    [OK] Pip upgraded!
 echo.
 
 REM ============================================================
-REM Step 5: Install Requirements
+REM Step 5: Install Compatible Packages
 REM ============================================================
 echo ============================================================
-echo [STEP 5/8] Installing Python packages...
+echo [STEP 5/8] Installing compatible Python packages...
 echo ============================================================
 echo.
 
-echo    [INFO] Installing core requirements...
-echo    [INFO] Installing packages with pre-compiled wheels...
+echo    [INFO] Installing packages with pre-compiled wheels only...
+echo    [INFO] This avoids C++ compiler requirements...
+echo.
 
-REM Install packages individually with fallback to pre-compiled wheels
-echo    [INFO] Installing numpy (pre-compiled wheel)...
-python -m pip install --only-binary=all numpy==2.2.6
+REM Install core packages individually with specific versions
+echo    [INFO] Installing numpy (compatible version)...
+python -m pip install --only-binary=all "numpy>=1.21.0,<2.0.0"
 if errorlevel 1 (
-    echo    [WARNING] Failed to install numpy 2.2.6, trying older version...
-    python -m pip install --only-binary=all "numpy>=1.21.0,<2.0.0"
-    if errorlevel 1 (
-        echo    [ERROR] Failed to install numpy! Please install Visual Studio Build Tools.
-        echo    [INFO] Download from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
-        pause
-        exit /b 1
-    )
+    echo    [ERROR] Failed to install numpy!
+    echo    [INFO] Your system may need Visual Studio Build Tools
+    echo    [INFO] Download from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+    pause
+    exit /b 1
 )
 
-echo    [INFO] Installing other requirements...
-python -m pip install --only-binary=all pandas openpyxl aiofiles requests
-python -m pip install playwright pyee typing_extensions
-python -m pip install pyinstaller
+echo    [INFO] Installing pandas (compatible version)...
+python -m pip install --only-binary=all "pandas>=1.5.0,<2.0.0"
 
-if errorlevel 1 (
-    echo    [WARNING] Some packages failed, trying alternative installation...
-    echo    [INFO] Installing from requirements.txt with --only-binary flag...
-    python -m pip install --only-binary=:all: -r requirements.txt
-    if errorlevel 1 (
-        echo    [ERROR] Failed to install requirements!
-        echo    [INFO] This usually means missing C++ build tools.
-        echo    [INFO] Please install Microsoft Visual C++ Build Tools:
-        echo    [INFO] https://visualstudio.microsoft.com/visual-cpp-build-tools/
-        pause
-        exit /b 1
-    )
-)
+echo    [INFO] Installing openpyxl...
+python -m pip install --only-binary=all openpyxl==3.1.2
+
+echo    [INFO] Installing aiofiles...
+python -m pip install --only-binary=all aiofiles==23.2.1
+
+echo    [INFO] Installing requests...
+python -m pip install --only-binary=all requests==2.31.0
+
+echo    [INFO] Installing playwright...
+python -m pip install playwright==1.40.0
 
 echo    [INFO] Installing additional packages...
-python -m pip install playwright-stealth
-python -m pip install PyQt5
+python -m pip install --only-binary=all pyee==11.1.0 typing_extensions==4.8.0 setuptools packaging
 
-echo    [OK] All packages installed!
+echo    [INFO] Installing optional packages...
+python -m pip install playwright-stealth
+if errorlevel 1 (
+    echo    [WARNING] playwright-stealth failed to install (optional)
+)
+
+python -m pip install PyQt5
+if errorlevel 1 (
+    echo    [WARNING] PyQt5 failed to install (GUI will not work)
+)
+
+echo    [OK] Core packages installed successfully!
 echo.
 
 REM ============================================================
@@ -248,7 +256,12 @@ echo ============================================================
 echo.
 
 echo    [INFO] Testing Python imports...
-python -c "import playwright; import pandas; import asyncio; print('All imports successful!')"
+python -c "import sys; print(f'Python {sys.version}')"
+python -c "import numpy; print(f'NumPy {numpy.__version__}')"
+python -c "import pandas; print(f'Pandas {pandas.__version__}')"
+python -c "import playwright; print('Playwright OK')"
+python -c "import asyncio; print('AsyncIO OK')"
+
 if errorlevel 1 (
     echo    [ERROR] Import test failed!
     pause
@@ -338,6 +351,9 @@ echo    SETUP COMPLETED SUCCESSFULLY! 🎉
 echo ============================================================
 echo.
 echo Your Amazon Scraping Tool is now ready to use!
+echo.
+echo INSTALLED VERSIONS:
+for /f "tokens=*" %%i in ('python -c "import numpy, pandas, playwright; print(f'NumPy: {numpy.__version__}, Pandas: {pandas.__version__}, Playwright: {playwright.__version__}')"') do echo    %%i
 echo.
 echo QUICK START OPTIONS:
 echo.

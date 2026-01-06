@@ -1,0 +1,15 @@
+# Compatible versions that work without C++ build tools
+aiofiles==23.2.1
+numpy>=1.21.0,<2.0.0
+openpyxl==3.1.2
+packaging==23.2
+pandas>=1.5.0,<2.0.0
+playwright==1.40.0
+pyee==11.1.0
+requests==2.31.0
+setuptools>=65.0.0
+typing_extensions==4.8.0
+
+# Optional packages (install separately if needed)
+# pyinstaller==6.3.0
+# PyQt5==5.15.10

@@ -28,10 +28,10 @@ if not exist "%TEMP_DIR%" mkdir "%TEMP_DIR%"
 echo [INFO] Downloading installation script...
 echo.
 
-REM Download the installation script using PowerShell
-powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; try { Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ajcoder326/amazonscarping-tool/master/INSTALL_ON_NEW_PC.bat' -OutFile '%TEMP_DIR%\INSTALL_ON_NEW_PC.bat' } catch { Write-Host 'Download failed. Please check internet connection.'; exit 1 }}"
+REM Download the safe installation script using PowerShell
+powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; try { Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ajcoder326/amazonscarping-tool/master/SETUP_WINDOWS_SAFE.bat' -OutFile '%TEMP_DIR%\SETUP_WINDOWS_SAFE.bat' } catch { Write-Host 'Download failed. Please check internet connection.'; exit 1 }}"
 
-if not exist "%TEMP_DIR%\INSTALL_ON_NEW_PC.bat" (
+if not exist "%TEMP_DIR%\SETUP_WINDOWS_SAFE.bat" (
     echo [ERROR] Failed to download installation script!
     echo.
     echo Please check:
@@ -41,7 +41,7 @@ if not exist "%TEMP_DIR%\INSTALL_ON_NEW_PC.bat" (
     echo.
     echo Manual download:
     echo 1. Go to: https://github.com/ajcoder326/amazonscarping-tool
-    echo 2. Download INSTALL_ON_NEW_PC.bat
+    echo 2. Download SETUP_WINDOWS_SAFE.bat
     echo 3. Run it manually
     echo.
     pause
@@ -50,11 +50,11 @@ if not exist "%TEMP_DIR%\INSTALL_ON_NEW_PC.bat" (
 
 echo [OK] Installation script downloaded!
 echo.
-echo [INFO] Starting installation process...
+echo [INFO] Starting Windows-safe installation process...
 echo.
 
 REM Run the installation script
-call "%TEMP_DIR%\INSTALL_ON_NEW_PC.bat"
+call "%TEMP_DIR%\SETUP_WINDOWS_SAFE.bat"
 
 REM Clean up
 echo.
